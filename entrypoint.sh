@@ -33,7 +33,8 @@ convert_in_to_mp4() {
 
         if [ $? -eq 0 ]; then
             echo "Successfully converted '${in_file}' to '${mp4_file}'."
-            rm "${in_file}"
+            detox -s iso8859_1 "${mp4_file}"
+	    rm "${in_file}"
         else
             echo "Failed to convert '${in_file}'."
         fi

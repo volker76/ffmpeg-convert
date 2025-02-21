@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get purge --auto-remove && \
     apt-get clean
     
-RUN apt-get install -y bash
+RUN apt-get install -y bash detox
 
 # Set the working directory to /app
 WORKDIR /app
