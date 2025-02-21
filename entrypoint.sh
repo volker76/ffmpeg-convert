@@ -22,14 +22,14 @@ convert_in_to_mp4() {
         echo "Converting '$in_file' to '$mp4_file'..."
 
 	
-	if [[ ! -e $outdir ]]; then
+	if [ ! -e $outdir ]; then
 	    mkdir $outdir
-	elif [[ ! -d $outdir ]]; then
+	elif [ ! -d $outdir ]; then
 	    echo "$outdir already exists but is not a directory" 1>&2
 	fi
 
         # Perform the conversion using ffmpeg
-        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac "$mp4_file" -y
+        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac "$mp4_file" -y < /dev/null
 
         if [ $? -eq 0 ]; then
             echo "Successfully converted '$in_file' to '$mp4_file'."
