@@ -15,7 +15,8 @@ convert_in_to_mp4() {
     # Find all .mp4 files in the WORKDIR
     find "${WORKDIR}" -type f -name "*.mp4" | while read -r in_file; do
         # Define the output .mp4 file path
-        mp4_file="output/${in_file%.mp4}.mp4"
+        filename=$(basename ${in_file})
+	mp4_file="${WORKDIR}/output/${filename%.*}.mp4"
 
         echo "Converting '${in_file}' to '${mp4_file}'..."
 
