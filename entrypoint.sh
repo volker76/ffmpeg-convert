@@ -16,11 +16,17 @@ convert_in_to_mp4() {
     find "${WORKDIR}" -type f -name "*.mp4" | while read -r in_file; do
         # Define the output .mp4 file path
         filename=$(basename ${in_file})
-	mp4_file="${WORKDIR}/output/${filename%.*}.mp4"
+	outdir="${WORKDIR}/output"
+	mp4_file="${outdir}/${filename%.*}.mp4"
 
         echo "Converting '${in_file}' to '${mp4_file}'..."
 
-	mkdir "${WORKDIR}/output"
+	
+	if [[ ! -e $outdir ]]; then
+	    mkdir $outdir
+	elif [[ ! -d $outdir ]]; then
+	    echo "$outdir already exists but is not a directory" 1>&2
+	fi
 
         # Perform the conversion using ffmpeg
         ffmpeg -i "${in_file}" -vcodec libx264 -acodec aac  "${mp4_file}" -y
