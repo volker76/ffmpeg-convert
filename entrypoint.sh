@@ -8,7 +8,9 @@ set -e
 : "${SLEEPTIME:=600}"  # Define the SLEEPTIME in seconds
 
 convert_in_to_mp4() {
-    echo "Starting conversion of .ts files to .mp4 in ${WORKDIR}..."
+    echo "Starting conversion of .mp4 files to .mp4 in ${WORKDIR}..."
+
+    ls -l ${WORKDIR}
 
     # Find all .mp4 files in the WORKDIR
     find "${WORKDIR}" -type f -name "*.mp4" | while read -r in_file; do
