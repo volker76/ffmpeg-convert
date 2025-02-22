@@ -6,6 +6,8 @@ set -e
 # Set default values if environment variables are not provided
 : "${WORKDIR:=/app/downloads}"  # Define the working directory
 : "${SLEEPTIME:=600}"  # Define the SLEEPTIME in seconds
+: "${THREADS:=6}"  # Define the number of THREADS
+
 
 convert_in_to_mp4() {
     echo "Starting conversion of .mp4 files to .mp4 in ${WORKDIR}..."
@@ -29,7 +31,7 @@ convert_in_to_mp4() {
 	fi
 
         # Perform the conversion using ffmpeg
-        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac "$mp4_file" -y < /dev/null
+        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac "$mp4_file" -y -threads ${THREADS} < /dev/null
 
         if [ $? -eq 0 ]; then
             echo "Successfully converted '$in_file' to '$mp4_file'."
