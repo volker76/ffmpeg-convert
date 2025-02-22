@@ -31,7 +31,7 @@ convert_in_to_mp4() {
 	fi
 
         # Perform the conversion using ffmpeg
-        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac "$mp4_file" -y -threads ${THREADS} < /dev/null
+        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac -preset fast -crf 32 "$mp4_file" -y -threads ${THREADS} < /dev/null
 
         if [ $? -eq 0 ]; then
             echo "Successfully converted '$in_file' to '$mp4_file'."
@@ -41,6 +41,35 @@ convert_in_to_mp4() {
             echo "Failed to convert '$in_file'."
         fi
     done
+
+    # Find all .ts files in the WORKDIR
+    find "${WORKDIR}" -type f -name "*.ts" | while read -r in_file; do
+        # Define the output .mp4 file path
+        filename=`basename "$in_file"`
+	outdir="$WORKDIR/output"
+	mp4_file="$outdir/${filename%.*}.mp4"
+
+        echo "Converting '$in_file' to '$mp4_file'..."
+
+	
+	if [ ! -e $outdir ]; then
+	    mkdir $outdir
+	elif [ ! -d $outdir ]; then
+	    echo "$outdir already exists but is not a directory" 1>&2
+	fi
+
+        # Perform the conversion using ffmpeg
+        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac -preset fast -crf 32 "$mp4_file" -y -threads ${THREADS} < /dev/null
+
+        if [ $? -eq 0 ]; then
+            echo "Successfully converted '$in_file' to '$mp4_file'."
+            detox -s iso8859_1 "$mp4_file"
+	    rm "${in_file}"
+        else
+            echo "Failed to convert '$in_file'."
+        fi
+    done
+
 
     echo "Conversion process completed."
 }
