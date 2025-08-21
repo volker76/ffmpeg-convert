@@ -31,7 +31,7 @@ convert_in_to_mp4() {
 	fi
 
         # Perform the conversion using ffmpeg
-        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac -preset fast -crf 32 "$mp4_file" -y -threads ${THREADS} < /dev/null
+        ffmpeg -i "$in_file" -vcodec libx264 -acodec aac -preset slower -crf 23 "$mp4_file" -y -threads ${THREADS} < /dev/null
 
         if [ $? -eq 0 ]; then
             echo "Successfully converted '$in_file' to '$mp4_file'."
