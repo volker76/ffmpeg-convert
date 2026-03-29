@@ -7,7 +7,11 @@ set -e
 : "${WORKDIR:=/app/downloads}"  # Define the working directory
 : "${SLEEPTIME:=600}"  # Define the SLEEPTIME in seconds
 : "${THREADS:=6}"  # Define the number of THREADS
-: "${CRF:=23}"
+: "${CRF:=23}"             # Video quality (0-51, lower = better, 23 = default)
+: "${PRESET:=slower}"      # Encoding preset (ultrafast, fast, medium, slow, slower, veryslow)
+: "${RESOLUTION:=}"        # Target resolution, e.g. 1920x1080 or 1280x720 (empty = keep original)
+: "${FPS:=}"               # Target frame rate, e.g. 25 or 30 (empty = keep original)
+: "${AUDIO_BITRATE:=}"     # Audio bitrate, e.g. 128k or 192k (empty = encoder default)
 
 convert_in_to_mp4() {
     echo "Starting conversion of .mp4 files to .mp4 in ${WORKDIR}..."
@@ -30,8 +34,27 @@ convert_in_to_mp4() {
 	    echo "$outdir already exists but is not a directory" 1>&2
 	fi
 
+        # Build optional ffmpeg parameters
+        VIDEO_FILTER=""
+        if [ -n "${RESOLUTION}" ] && [ -n "${FPS}" ]; then
+            VIDEO_FILTER="-vf scale=${RESOLUTION},fps=${FPS}"
+        elif [ -n "${RESOLUTION}" ]; then
+            VIDEO_FILTER="-vf scale=${RESOLUTION}"
+        elif [ -n "${FPS}" ]; then
+            VIDEO_FILTER="-vf fps=${FPS}"
+        fi
+        AUDIO_OPTS=""
+        if [ -n "${AUDIO_BITRATE}" ]; then
+            AUDIO_OPTS="-b:a ${AUDIO_BITRATE}"
+        fi
+
         # Perform the conversion using ffmpeg
-		ffmpeg -i "$in_file" -vcodec libx264 -acodec aac -preset slower -crf ${CRF} "$mp4_file" -y -threads ${THREADS} < /dev/null
+        ffmpeg -i "$in_file" \
+            -vcodec libx264 -preset ${PRESET} -crf ${CRF} \
+            ${VIDEO_FILTER} \
+            -acodec aac ${AUDIO_OPTS} \
+            -threads ${THREADS} \
+            "$mp4_file" -y < /dev/null
 
 
         if [ $? -eq 0 ]; then
